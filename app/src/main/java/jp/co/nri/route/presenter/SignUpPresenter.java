@@ -13,6 +13,7 @@ import jp.co.nri.route.model.UserModel;
 import jp.co.nri.route.util.AppUtil;
 import jp.co.nri.route.view.ISignUpView;
 import retrofit2.HttpException;
+import jp.co.nri.route.util.MD5Utils;
 
 public class SignUpPresenter extends BasePresenter<ISignUpView> {
 
@@ -51,7 +52,7 @@ public class SignUpPresenter extends BasePresenter<ISignUpView> {
         User user = new User();
         user.setName(name);
         user.setUserid(userid);
-        user.setPassword(password);
+        user.setPassword(MD5Utils.MD5Encode(password, "utf8"));
         userModel.signUp(user).subscribe(new Observer<BaseBean>() {
             @Override
             public void onSubscribe(Disposable d) {
