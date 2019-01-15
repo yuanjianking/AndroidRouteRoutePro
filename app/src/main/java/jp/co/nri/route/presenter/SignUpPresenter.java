@@ -7,13 +7,13 @@ import javax.inject.Inject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import jp.co.nri.route.base.BasePresenter;
-import jp.co.nri.route.bean.BaseBean;
+import jp.co.nri.route.bean.Result;
 import jp.co.nri.route.bean.User;
 import jp.co.nri.route.model.UserModel;
 import jp.co.nri.route.util.AppUtil;
+import jp.co.nri.route.util.MD5Utils;
 import jp.co.nri.route.view.ISignUpView;
 import retrofit2.HttpException;
-import jp.co.nri.route.util.MD5Utils;
 
 public class SignUpPresenter extends BasePresenter<ISignUpView> {
 
@@ -53,7 +53,7 @@ public class SignUpPresenter extends BasePresenter<ISignUpView> {
         user.setName(name);
         user.setUserid(userid);
         user.setPassword(MD5Utils.MD5Encode(password, "utf8"));
-        userModel.signUp(user).subscribe(new Observer<BaseBean>() {
+        userModel.signUp(user).subscribe(new Observer<Result>() {
             @Override
             public void onSubscribe(Disposable d) {
                 disposable = d;
@@ -61,7 +61,7 @@ public class SignUpPresenter extends BasePresenter<ISignUpView> {
             }
 
             @Override
-            public void onNext(BaseBean baseBean) {
+            public void onNext(Result baseBean) {
                 if("200000".equals(baseBean.getStatus())){
                     AppUtil.showToast("Signup Success");
                     view.closeView();

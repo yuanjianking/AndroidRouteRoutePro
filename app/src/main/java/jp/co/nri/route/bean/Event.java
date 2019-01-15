@@ -13,6 +13,21 @@ public class Event {
     private String startTime;
     private String endTime;
 
+    public Event() {
+    }
+
+    public Event(String name, String userid, String detail, String latitude, String longitude, String startDate, String endDate, String startTime, String endTime) {
+        this.name = name;
+        this.userid = userid;
+        this.detail = detail;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public String get_id() {
         return _id;
     }

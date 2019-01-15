@@ -4,6 +4,11 @@
     package="jp.co.nri.route">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.ACCESS_MOCK_LOCATION"
+        tools:ignore="MockLocation,ProtectedPermissions" />
 
     <application
         android:name=".base.BaseApplication"
@@ -25,7 +30,9 @@
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.SignUpActivity" />
         <activity android:name=".activity.EventListActivity" />
-        <activity android:name=".activity.RouteEventActivity"></activity>
+        <activity android:name=".activity.RouteEventActivity" />
+        <activity android:name=".activity.TestActivity" />
+        <activity android:name=".activity.UserEventActivity"></activity>
     </application>
 
 </manifest>

@@ -1,12 +1,16 @@
 package jp.co.nri.route.presenter;
 
+import android.content.SharedPreferences;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import jp.co.nri.route.base.BaseApplication;
 import jp.co.nri.route.base.BasePresenter;
+import jp.co.nri.route.bean.LoginResult;
 import jp.co.nri.route.model.UserModel;
-import jp.co.nri.route.bean.BaseBean;
+import jp.co.nri.route.bean.Result;
 import jp.co.nri.route.bean.User;
 import jp.co.nri.route.util.AppUtil;
 import jp.co.nri.route.util.MD5Utils;
@@ -32,7 +36,7 @@ public class LoginPresenter extends BasePresenter<ILoginView> {
         User user = new User();
         user.setUserid(userid);
         user.setPassword(MD5Utils.MD5Encode(password, "utf8"));
-        loginModel.login(user).subscribe(new Observer<BaseBean>() {
+        loginModel.login(user).subscribe(new Observer<LoginResult>() {
             @Override
             public void onSubscribe(Disposable d) {
                 disposable = d;
@@ -40,12 +44,14 @@ public class LoginPresenter extends BasePresenter<ILoginView> {
             }
 
             @Override
-            public void onNext(BaseBean baseBean) {
-                if("200000".equals(baseBean.getStatus())){
+            public void onNext(LoginResult result) {
+                if("200000".equals(result.getStatus())){
+                    BaseApplication.getApplication().userId = userid;
+                    BaseApplication.getApplication().name = result.getName();
                     view.startListActivity();
-                }else if("201002".equals(baseBean.getStatus())){
+                }else if("201002".equals(result.getStatus())){
                     AppUtil.showToast("Userd 検索結果なし");
-                }else if("201003".equals(baseBean.getStatus())){
+                }else if("201003".equals(result.getStatus())){
                     AppUtil.showToast("パスワード間違い");
                 }
             }

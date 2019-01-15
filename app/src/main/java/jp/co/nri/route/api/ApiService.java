@@ -1,10 +1,12 @@
 package jp.co.nri.route.api;
 
 import io.reactivex.Observable;
-import jp.co.nri.route.bean.BaseBean;
+import jp.co.nri.route.bean.Event;
+import jp.co.nri.route.bean.LoginResult;
+import jp.co.nri.route.bean.Result;
 import jp.co.nri.route.bean.EventListResult;
+import jp.co.nri.route.bean.UpdateGuestLocationResult;
 import jp.co.nri.route.bean.User;
-import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -15,12 +17,18 @@ import retrofit2.http.POST;
 public interface ApiService {
 
     @POST("login")
-    Observable<BaseBean> login(@Body User user);
+    Observable<LoginResult> login(@Body User user);
 
     @POST("signup")
-    Observable<BaseBean> signUp(@Body User user);
+    Observable<Result> signUp(@Body User user);
 
     @GET("eventList")
     Observable<EventListResult> eventList();
+
+    @POST("makeEvent")
+    Observable<Result> makeEvent(@Body Event event);
+
+    @POST("updateGuestLocation")
+    Observable<UpdateGuestLocationResult> updateGuestLocation();
 
 }

@@ -5,21 +5,19 @@ import dagger.Provides;
 import jp.co.nri.route.api.ApiService;
 import jp.co.nri.route.di.scope.PerActivity;
 import jp.co.nri.route.model.EventModel;
-import jp.co.nri.route.view.IEventListView;
+import jp.co.nri.route.view.IRouteEventView;
 
 @Module
-public class EventListModule {
+public class RouteEventModule {
+    private final IRouteEventView view;
 
-    private final IEventListView view;
-
-    public EventListModule(IEventListView view) {
+    public RouteEventModule(IRouteEventView view) {
         this.view = view;
     }
 
-    // p层需要使用activity，所以在build时需要主动new model
     @PerActivity
     @Provides
-    IEventListView provideIEventListView() {
+    IRouteEventView provideIRouteEventView() {
         return view;
     }
 

@@ -17,11 +17,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class BaseApplication extends Application {
 
-    private static final String HOST = "http://192.168.61.159:8880/";
+    private static final String HOST = "http://54.214.116.94:8888/";
+    //private static final String HOST = "http://192.168.61.159:8880/";
     private Retrofit retrofit;
     private static BaseApplication baseApplication;
     private volatile ApiService apiService;
     private AppComponent appComponent;
+    public String userId;
+    public String name;
 
     @Override
     public void onCreate() {

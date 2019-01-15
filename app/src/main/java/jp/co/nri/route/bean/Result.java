@@ -1,6 +1,6 @@
 package jp.co.nri.route.bean;
 
-public class BaseBean {
+public class Result {
 
     protected String status;
 

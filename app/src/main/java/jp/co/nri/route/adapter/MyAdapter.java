@@ -15,12 +15,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.co.nri.route.R;
+import jp.co.nri.route.base.BaseApplication;
 import jp.co.nri.route.bean.Event;
 
 /**
  * EventList adapter
  */
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements View.OnClickListener {
+
+    private ItemClickListener listener;
     private List<Event> list;
     private long sysTime;
     @SuppressLint("SimpleDateFormat")
@@ -32,6 +35,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         this.list = list;
     }
 
+    public void setItemClickListener(ItemClickListener listener){
+        this.listener = listener;
+    }
+
     public void setSysTime(long sysTime){
         this.sysTime = sysTime;
     }
@@ -40,6 +47,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_event, parent, false);
         MyAdapter.ViewHolder viewHolder = new MyAdapter.ViewHolder(view);
+        view.setOnClickListener(this);
         return viewHolder;
     }
 
@@ -49,6 +57,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.tvTitle.setText(event.getName());
         holder.tvSubTitle.setText(event.getDetail());
         holder.tvStatus.setVisibility(View.GONE);
+        holder.rlItem.setTag(position);
         try {
             long sTime = sdf.parse(event.getStartDate()+" "+event.getStartTime()).getTime();
             long eTime = sdf.parse(event.getEndDate()+" "+event.getEndTime()).getTime();
@@ -70,15 +79,34 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return list.size();
     }
 
+    @Override
+    public void onClick(View v) {
+        int p = (int) v.getTag();
+        Event event = list.get(p);
+        if(listener == null || event.getUserid() == null){
+            return;
+        }
+        if(event.getUserid().equals(BaseApplication.getApplication().userId)){
+            listener.onItemClick(event, true);
+        }else{
+            listener.onItemClick(event, false);
+        }
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tvTitle) TextView tvTitle;
         @BindView(R.id.tvSubTitle) TextView tvSubTitle;
         @BindView(R.id.tvStatus) TextView tvStatus;
+        @BindView(R.id.rlItem) View rlItem;
 
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface ItemClickListener{
+        void onItemClick(Event event, boolean isUser);
     }
 }
