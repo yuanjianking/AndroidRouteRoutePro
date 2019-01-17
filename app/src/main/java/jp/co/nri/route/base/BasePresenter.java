@@ -10,21 +10,20 @@ import io.reactivex.disposables.Disposable;
 public abstract class BasePresenter<T> {
 
     protected T view;
-    protected CompositeDisposable mDisposables;
-    protected Disposable disposable;
+    private CompositeDisposable mDisposables;
 
     protected BasePresenter() {
         mDisposables = new CompositeDisposable();
     }
 
-    public void subscribe() {
+    public void subscribe(Disposable disposable) {
         if(disposable!=null) {
             mDisposables.add(disposable);
         }
     }
 
 
-    public void unsubscribe() {
+    void unsubscribe() {
         if (mDisposables != null && mDisposables.size()>0) {
             mDisposables.dispose();
         }

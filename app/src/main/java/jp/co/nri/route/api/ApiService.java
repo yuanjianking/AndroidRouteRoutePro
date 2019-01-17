@@ -5,7 +5,8 @@ import jp.co.nri.route.bean.Event;
 import jp.co.nri.route.bean.LoginResult;
 import jp.co.nri.route.bean.Result;
 import jp.co.nri.route.bean.EventListResult;
-import jp.co.nri.route.bean.UpdateGuestLocationResult;
+import jp.co.nri.route.bean.LocationRequest;
+import jp.co.nri.route.bean.LocationResult;
 import jp.co.nri.route.bean.User;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -29,6 +30,11 @@ public interface ApiService {
     Observable<Result> makeEvent(@Body Event event);
 
     @POST("updateGuestLocation")
-    Observable<UpdateGuestLocationResult> updateGuestLocation();
+    Observable<LocationResult> updateGuestLocation(@Body LocationRequest request);
 
+    @POST("guestHistoryLocation")
+    Observable<LocationResult> guestHistoryLocation(@Body LocationRequest request);
+
+    @POST("guestLocations")
+    Observable<LocationResult> guestLocations(@Body LocationRequest request);
 }

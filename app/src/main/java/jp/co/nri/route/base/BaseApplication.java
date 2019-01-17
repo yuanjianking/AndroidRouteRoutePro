@@ -2,7 +2,9 @@ package jp.co.nri.route.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Handler;
 import android.view.View;
+
 
 import jp.co.nri.route.api.ApiService;
 import jp.co.nri.route.di.component.AppComponent;
@@ -19,12 +21,14 @@ public class BaseApplication extends Application {
 
     private static final String HOST = "http://54.214.116.94:8888/";
     //private static final String HOST = "http://192.168.61.159:8880/";
+    public static final String MAP_ID = "dj00aiZpPXhLdmFnUlRhN3VqSCZzPWNvbnN1bWVyc2VjcmV0Jng9ODY-";
     private Retrofit retrofit;
     private static BaseApplication baseApplication;
     private volatile ApiService apiService;
     private AppComponent appComponent;
     public String userId;
     public String name;
+    private Handler handler;
 
     @Override
     public void onCreate() {
@@ -32,12 +36,17 @@ public class BaseApplication extends Application {
 
         baseApplication = this;
         createRetrofit();
+        handler = new Handler();
 
         appComponent = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
     }
 
     public AppComponent getAppComponent() {
         return appComponent;
+    }
+
+    public Handler getHandler(){
+        return handler;
     }
 
     public static BaseApplication getApplication(){

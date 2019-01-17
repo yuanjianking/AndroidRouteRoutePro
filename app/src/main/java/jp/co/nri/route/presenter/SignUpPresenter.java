@@ -4,8 +4,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import jp.co.nri.route.base.BaseObserver;
 import jp.co.nri.route.base.BasePresenter;
 import jp.co.nri.route.bean.Result;
 import jp.co.nri.route.bean.User;
@@ -13,7 +12,6 @@ import jp.co.nri.route.model.UserModel;
 import jp.co.nri.route.util.AppUtil;
 import jp.co.nri.route.util.MD5Utils;
 import jp.co.nri.route.view.ISignUpView;
-import retrofit2.HttpException;
 
 public class SignUpPresenter extends BasePresenter<ISignUpView> {
 
@@ -53,12 +51,7 @@ public class SignUpPresenter extends BasePresenter<ISignUpView> {
         user.setName(name);
         user.setUserid(userid);
         user.setPassword(MD5Utils.MD5Encode(password, "utf8"));
-        userModel.signUp(user).subscribe(new Observer<Result>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                disposable = d;
-                subscribe();
-            }
+        userModel.signUp(user).subscribe(new BaseObserver<Result>(this) {
 
             @Override
             public void onNext(Result baseBean) {
@@ -68,25 +61,6 @@ public class SignUpPresenter extends BasePresenter<ISignUpView> {
                 }else if("201001".equals(baseBean.getStatus())){
                     AppUtil.showToast("ID重複");
                 }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if(e instanceof HttpException){
-                    HttpException httpException = (HttpException) e;
-                    int code = httpException.code();
-                    if (code >= 400 && code < 500) {
-                        AppUtil.showToast("リクエスト不正");
-                    }
-                    if (code == 500) {
-                        AppUtil.showToast("システムエラー");
-                    }
-                }
-            }
-
-            @Override
-            public void onComplete() {
-
             }
         });
     }

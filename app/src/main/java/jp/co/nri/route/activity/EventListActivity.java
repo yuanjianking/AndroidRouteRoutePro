@@ -50,7 +50,7 @@ public class EventListActivity extends BaseActivity<EventListPresenter> implemen
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-        //mAdapter.setItemClickListener(this);
+        mAdapter.setItemClickListener(this);
     }
 
 
@@ -89,8 +89,9 @@ public class EventListActivity extends BaseActivity<EventListPresenter> implemen
 
     @Override
     public void onItemClick(Event event, boolean isUser) {
-        if(isUser){
+        if(!isUser){
             Intent intent = new Intent(this, UserEventActivity.class);
+            intent.putExtra("event", event);
             startActivity(intent);
         }
     }

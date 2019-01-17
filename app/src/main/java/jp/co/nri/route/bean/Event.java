@@ -1,6 +1,8 @@
 package jp.co.nri.route.bean;
 
-public class Event {
+import java.io.Serializable;
+
+public class Event implements Serializable {
 
     private String _id;
     private String name;

@@ -32,7 +32,8 @@
         <activity android:name=".activity.EventListActivity" />
         <activity android:name=".activity.RouteEventActivity" />
         <activity android:name=".activity.TestActivity" />
-        <activity android:name=".activity.UserEventActivity"></activity>
+        <activity android:name=".activity.UserEventActivity" />
+        <activity android:name=".activity.OwnerEventActivity"></activity>
     </application>
 
 </manifest>

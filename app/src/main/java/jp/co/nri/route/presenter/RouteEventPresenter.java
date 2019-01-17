@@ -2,9 +2,8 @@ package jp.co.nri.route.presenter;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import jp.co.nri.route.base.BaseApplication;
+import jp.co.nri.route.base.BaseObserver;
 import jp.co.nri.route.base.BasePresenter;
 import jp.co.nri.route.bean.Event;
 import jp.co.nri.route.bean.Result;
@@ -12,7 +11,6 @@ import jp.co.nri.route.model.EventModel;
 import jp.co.nri.route.util.AppUtil;
 import jp.co.nri.route.view.IRouteEventView;
 import jp.co.yahoo.android.maps.GeoPoint;
-import retrofit2.HttpException;
 
 public class RouteEventPresenter extends BasePresenter<IRouteEventView> {
 
@@ -25,6 +23,9 @@ public class RouteEventPresenter extends BasePresenter<IRouteEventView> {
         this.eventModel = eventModel;
     }
 
+    /**
+     * イベントを発表する
+     */
     public void routeEvent(String eventName, String eventDetail, String startDate, String endDate, String startTime, String endTime){
         if(geoPoint == null){
             AppUtil.showToast("ターゲット値を設定していません");
@@ -39,12 +40,7 @@ public class RouteEventPresenter extends BasePresenter<IRouteEventView> {
             return;
         }
         Event event = new Event(eventName, BaseApplication.getApplication().userId, eventDetail, String.valueOf(geoPoint.getLatitude()), String.valueOf(geoPoint.getLongitude()), startDate, endDate, startTime, endTime);
-        eventModel.makeEvent(event).subscribe(new Observer<Result>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                disposable = d;
-                subscribe();
-            }
+        eventModel.makeEvent(event).subscribe(new BaseObserver<Result>(this) {
 
             @Override
             public void onNext(Result result) {
@@ -57,24 +53,6 @@ public class RouteEventPresenter extends BasePresenter<IRouteEventView> {
                 }
             }
 
-            @Override
-            public void onError(Throwable e) {
-                if(e instanceof HttpException){
-                    HttpException httpException = (HttpException) e;
-                    int code = httpException.code();
-                    if (code >= 400 && code < 500) {
-                        AppUtil.showToast("リクエスト不正");
-                    }
-                    if (code == 500) {
-                        AppUtil.showToast("システムエラー");
-                    }
-                }
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
         });
     }
 

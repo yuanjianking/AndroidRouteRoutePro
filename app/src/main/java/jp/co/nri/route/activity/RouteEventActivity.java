@@ -83,7 +83,7 @@ public class RouteEventActivity extends BaseActivity<RouteEventPresenter> implem
      * 初期化MapView
      */
     private void initMap() {
-        mapView = new MapView(this, "dj00aiZpPXhLdmFnUlRhN3VqSCZzPWNvbnN1bWVyc2VjcmV0Jng9ODY-");
+        mapView = new MapView(this, BaseApplication.MAP_ID);
         fLMap.addView(mapView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         MyLocationOverlay overlay = new MyLocationOverlay(getApplicationContext(), mapView);
         overlay.runOnFirstFix(new Runnable() {
@@ -95,7 +95,6 @@ public class RouteEventActivity extends BaseActivity<RouteEventPresenter> implem
                     mapView.getMapController().animateTo(p);
                 }
             }
-
         });
         overlay.enableMyLocation();
         mapView.getMapController().setZoom(1);
@@ -117,6 +116,7 @@ public class RouteEventActivity extends BaseActivity<RouteEventPresenter> implem
                 PopupOverlay popupOverlay = new PopupOverlay();
                 mapView.getOverlays().add(popupOverlay);
                 overlay.setOnFocusChangeListener(popupOverlay);
+                presenter.setLatLon(geoPoint);
             }
         });
     }
@@ -132,7 +132,6 @@ public class RouteEventActivity extends BaseActivity<RouteEventPresenter> implem
     @Override
     public boolean onLongPress(MapView mapView, Object o, PinOverlay pinOverlay, GeoPoint geoPoint) {
         mapView.getOverlays().remove(pinOverlay);
-        presenter.setLatLon(geoPoint);
         alertDialog(mapView, geoPoint);
         return true;
     }

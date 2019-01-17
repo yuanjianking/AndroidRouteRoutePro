@@ -1,21 +1,16 @@
 package jp.co.nri.route.presenter;
 
-import android.content.SharedPreferences;
-
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import jp.co.nri.route.base.BaseApplication;
+import jp.co.nri.route.base.BaseObserver;
 import jp.co.nri.route.base.BasePresenter;
 import jp.co.nri.route.bean.LoginResult;
-import jp.co.nri.route.model.UserModel;
-import jp.co.nri.route.bean.Result;
 import jp.co.nri.route.bean.User;
+import jp.co.nri.route.model.UserModel;
 import jp.co.nri.route.util.AppUtil;
 import jp.co.nri.route.util.MD5Utils;
 import jp.co.nri.route.view.ILoginView;
-import retrofit2.HttpException;
 
 public class LoginPresenter extends BasePresenter<ILoginView> {
 
@@ -36,12 +31,7 @@ public class LoginPresenter extends BasePresenter<ILoginView> {
         User user = new User();
         user.setUserid(userid);
         user.setPassword(MD5Utils.MD5Encode(password, "utf8"));
-        loginModel.login(user).subscribe(new Observer<LoginResult>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                disposable = d;
-                subscribe();
-            }
+        loginModel.login(user).subscribe(new BaseObserver<LoginResult>(this) {
 
             @Override
             public void onNext(LoginResult result) {
@@ -56,24 +46,6 @@ public class LoginPresenter extends BasePresenter<ILoginView> {
                 }
             }
 
-            @Override
-            public void onError(Throwable e) {
-                if(e instanceof HttpException){
-                    HttpException httpException = (HttpException) e;
-                    int code = httpException.code();
-                    if (code >= 400 && code < 500) {
-                        AppUtil.showToast("リクエスト不正");
-                    }
-                    if (code == 500) {
-                        AppUtil.showToast("システムエラー");
-                    }
-                }
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
         });
     }
 }
