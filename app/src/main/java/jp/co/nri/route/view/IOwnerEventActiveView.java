@@ -6,4 +6,6 @@ public interface IOwnerEventActiveView {
 
     MapView getMapView();
 
+    void setTitle(String title);
+
 }

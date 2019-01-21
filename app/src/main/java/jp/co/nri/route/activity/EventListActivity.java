@@ -89,11 +89,14 @@ public class EventListActivity extends BaseActivity<EventListPresenter> implemen
 
     @Override
     public void onItemClick(Event event, boolean isUser) {
-        if(!isUser){
-            Intent intent = new Intent(this, UserEventActivity.class);
-            intent.putExtra("event", event);
-            startActivity(intent);
+        Intent intent;
+        if(isUser){
+            intent = new Intent(this, OwnerEventActivity.class);
+        }else{
+            intent = new Intent(this, UserEventActivity.class);
         }
+        intent.putExtra("event", event);
+        startActivity(intent);
     }
 }
 
