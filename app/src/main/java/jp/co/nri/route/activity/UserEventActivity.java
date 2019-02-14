@@ -41,6 +41,7 @@ public class UserEventActivity extends BaseActivity<UserEventActivePresenter> im
         DaggerUserEventActiveComponent.builder().appComponent(BaseApplication.getApplication().getAppComponent()).
                 userEventActiveModule(new UserEventActiveModule(this)).build().inject(this);
         mapView = new MapView(this, BaseApplication.MAP_ID);
+        mapView.setScalebar(true);
         fLMap.addView(mapView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
     }
 

@@ -5,11 +5,12 @@ import android.app.Application;
 import android.os.Handler;
 import android.view.View;
 
-
 import jp.co.nri.route.api.ApiService;
 import jp.co.nri.route.di.component.AppComponent;
 import jp.co.nri.route.di.component.DaggerAppComponent;
 import jp.co.nri.route.di.module.AppModule;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -20,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class BaseApplication extends Application {
 
     private static final String HOST = "http://54.214.116.94:8888/";
-    //private static final String HOST = "http://192.168.61.159:8880/";
+    //private static final String HOST = "http://192.168.61.32:8888/";
     public static final String MAP_ID = "dj00aiZpPXhLdmFnUlRhN3VqSCZzPWNvbnN1bWVyc2VjcmV0Jng9ODY-";
     private Retrofit retrofit;
     private static BaseApplication baseApplication;
@@ -29,6 +30,7 @@ public class BaseApplication extends Application {
     public String userId;
     public String name;
     private Handler handler;
+    public static String token;
 
     @Override
     public void onCreate() {
@@ -54,10 +56,22 @@ public class BaseApplication extends Application {
     }
 
     private void createRetrofit() {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(chain -> {
+                    Request original = chain.request();
+                    Request request = original.newBuilder()
+                            .addHeader("token", token == null ? "" : token)
+                            .method(original.method(), original.body())
+                            .build();
+                    return chain.proceed(request);
+                })
+                .hostnameVerifier((hostname, session) -> true)
+                .build();
         retrofit = new Retrofit.Builder().
                 baseUrl(HOST).
                 addConverterFactory(GsonConverterFactory.create()).
                 addCallAdapterFactory(RxJava2CallAdapterFactory.create()).
+                client(okHttpClient).
                 build();
     }
 

@@ -42,6 +42,8 @@ public class EventListPresenter extends BasePresenter<IEventListView> {
                     view.updateListView(eventListResult.getSysTime());
                 }else if("201004".equals(eventListResult.getStatus())){
                     AppUtil.showToast("イペントなし");
+                }else if("202000".equals(eventListResult.getStatus())){
+                    AppUtil.showToast("Token期限が切れる");
                 }
             }
         });

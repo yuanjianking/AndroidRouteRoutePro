@@ -8,6 +8,7 @@ import android.location.Location;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,10 +25,15 @@ import jp.co.nri.route.util.AppUtil;
 import jp.co.nri.route.view.IUserEventActiveView;
 import jp.co.yahoo.android.maps.GeoPoint;
 import jp.co.yahoo.android.maps.MyLocationOverlay;
+import jp.co.yahoo.android.maps.Overlay;
 import jp.co.yahoo.android.maps.PinOverlay;
 import jp.co.yahoo.android.maps.PolylineOverlay;
 import jp.co.yahoo.android.maps.PopupOverlay;
 import jp.co.yahoo.android.maps.ar.ShapeUtil;
+import jp.co.yahoo.android.maps.navi.NaviController;
+import jp.co.yahoo.android.maps.routing.GPoint;
+import jp.co.yahoo.android.maps.routing.RouteControl;
+import jp.co.yahoo.android.maps.routing.RouteOverlay;
 
 public class UserEventActivePresenter extends BasePresenter<IUserEventActiveView> {
 
@@ -45,6 +51,8 @@ public class UserEventActivePresenter extends BasePresenter<IUserEventActiveView
     private long sysTime;
     private long startTime;
     private GeoPoint targetPoint;
+    private RouteOverlay routeOverlay;
+    private RouteControl routeControl;
 
     @Inject
     public UserEventActivePresenter(IUserEventActiveView view, EventModel eventModel) {
@@ -91,6 +99,9 @@ public class UserEventActivePresenter extends BasePresenter<IUserEventActiveView
                 GeoPoint p = new GeoPoint((int) (location.getLatitude() * 1E6),(int) (location.getLongitude() * 1E6));
                 if(list.size() == 0){
                     updateMap(p);
+                    if(startTime > 0) {
+                        //addRouteOverlay(p);
+                    }
                 }else{
                     GeoPoint lastGeoPoint = list.get(list.size()-1);
                     // 移動距離米を取得
@@ -99,6 +110,13 @@ public class UserEventActivePresenter extends BasePresenter<IUserEventActiveView
                         if(startTime > 0) {
                             moveDistance = (double)Math.round(moveDistance/1000.0*10.0)/10.0;
                             currentDistance += moveDistance;
+
+                            /*
+                            GPoint gp = new GPoint(p.getLongitude(), p.getLatitude());
+                            routeControl.cmpLineAndPoint(gp);
+                            double lineDist = routeControl.getMDistanceToNearPoint(gp);
+                            System.out.println("------> lineDist " + lineDist);
+                            */
                         }
                         updateMap(p);
                     }
@@ -127,7 +145,13 @@ public class UserEventActivePresenter extends BasePresenter<IUserEventActiveView
      */
     private void updateMap(GeoPoint p){
         view.getMapView().getMapController().animateTo(p);
-        view.getMapView().getOverlays().clear();
+        Iterator<Overlay> iterable = view.getMapView().getOverlays().iterator();
+        while(iterable.hasNext()){
+            Overlay overlay = iterable.next();
+            if(!routeOverlay.equals(overlay)){
+                iterable.remove();
+            }
+        }
 
         // 目的地
         PinOverlay tOverlay = new PinOverlay(targetDrawable);
@@ -262,5 +286,65 @@ public class UserEventActivePresenter extends BasePresenter<IUserEventActiveView
         if(list.size() > 0){
             view.getMapView().getMapController().animateTo(list.get(list.size()-1));
         }
+    }
+
+    private void addRouteOverlay(GeoPoint p){
+        // route
+        routeOverlay = new RouteOverlay(BaseApplication.getApplication(), BaseApplication.MAP_ID);
+        routeOverlay.setRoutePos(p, targetPoint, RouteOverlay.TRAFFIC_WALK);
+        //出発地ピンを非表示
+        routeOverlay.setStartPinVisible(false);
+        //目的地ピンを非表示
+        routeOverlay.setGoalPinVisible(false);
+        //経由点ピンを非表示
+        routeOverlay.setRoutePinVisible(false);
+        routeOverlay.setRouteOverlayListener(new RouteOverlay.RouteOverlayListener() {
+            @Override
+            public boolean finishRouteSearch(RouteOverlay routeOverlay) {
+                routeOverlay.getAllRouteNodeInfo();
+                routeControl = (RouteControl) routeOverlay.getObject();
+
+                NaviController naviController = new NaviController(BaseApplication.getApplication(), routeOverlay);
+                naviController.setMapView(view.getMapView());
+                naviController.setNaviControlListener(new NaviController.NaviControllerListener() {
+                    @Override
+                    public boolean onLocationChanged(NaviController naviController) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLocationTimeOver(NaviController naviController) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLocationAccuracyBad(NaviController naviController) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onRouteOut(NaviController naviController) {
+                        System.out.println("------> " + "onRouteOut");
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onGoal(NaviController naviController) {
+                        return false;
+                    }
+                });
+                naviController.start();
+
+
+                return false;
+            }
+
+            @Override
+            public boolean errorRouteSearch(RouteOverlay routeOverlay, int i) {
+                return false;
+            }
+        });
+        routeOverlay.search();
+        view.getMapView().getOverlays().add(routeOverlay);
     }
 }

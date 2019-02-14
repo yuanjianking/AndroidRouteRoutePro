@@ -38,6 +38,7 @@ public class LoginPresenter extends BasePresenter<ILoginView> {
                 if("200000".equals(result.getStatus())){
                     BaseApplication.getApplication().userId = userid;
                     BaseApplication.getApplication().name = result.getName();
+                    BaseApplication.token = result.getToken();
                     view.startListActivity();
                 }else if("201002".equals(result.getStatus())){
                     AppUtil.showToast("Userd 検索結果なし");

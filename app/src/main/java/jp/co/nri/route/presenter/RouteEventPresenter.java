@@ -50,6 +50,8 @@ public class RouteEventPresenter extends BasePresenter<IRouteEventView> {
                     AppUtil.showToast("メールアドレス検索結果なし");
                 }else if("201005".equals(result.getStatus())){
                     AppUtil.showToast("イベント日が過去日付");
+                }else if("202000".equals(result.getStatus())){
+                    AppUtil.showToast("Token期限が切れる");
                 }
             }
 
